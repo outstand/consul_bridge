@@ -1,4 +1,5 @@
 require 'consul_bridge/base'
+require 'consul_bridge/get_private_ip'
 require 'excon'
 
 module ConsulBridge
@@ -12,8 +13,11 @@ module ConsulBridge
     end
 
     def call
+      private_ip = GetPrivateIP.call
+
       joined = false
       master_ips.each do |ip|
+        next if ip == private_ip
         begin
           Excon.get(
             JOIN_URL + "/#{ip}",
