@@ -13,12 +13,14 @@ module ConsulBridge
     end
 
     def call
-      private_ip = GetPrivateIP.call
+      private_ip = GetPrivateIP.call.private_ip
+      puts "Detected private ip: #{private_ip}"
 
       joined = false
       master_ips.each do |ip|
         next if ip == private_ip
         begin
+          puts "Trying to join #{ip}"
           Excon.get(
             JOIN_URL + "/#{ip}",
             expects: [200],

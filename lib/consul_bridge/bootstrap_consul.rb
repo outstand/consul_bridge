@@ -18,8 +18,10 @@ module ConsulBridge
         sleep 5
       end
 
+      puts '==> Bootstrapping consul'
       master_ips = DownloadMasters.call(bucket: self.bucket).master_ips
       JoinConsul.call(master_ips: master_ips)
+      puts '==> Done.'
     end
   end
 end
