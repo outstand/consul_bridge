@@ -31,7 +31,7 @@ module ConsulBridge
           )
           joined = true
           break
-        rescue Excon::Errors::HTTPStatusError
+        rescue Excon::Errors::HTTPStatusError, Excon::Errors::SocketError
           next
         end
       end
