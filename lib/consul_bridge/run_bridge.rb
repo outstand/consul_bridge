@@ -5,15 +5,17 @@ require 'concurrent'
 
 module ConsulBridge
   class RunBridge < Base
-    attr_accessor :bucket, :container_name
+    attr_accessor :bucket, :container_name, :join_all
 
-    def initialize(bucket:, container_name:)
+    def initialize(bucket:, container_name:, join_all: false)
       self.bucket = bucket
       self.container_name = container_name
+      self.join_all = join_all
     end
 
     def call
-      Concurrent.use_stdlib_logger(Logger::DEBUG)
+      # Enable for actor debugging
+      # Concurrent.use_stdlib_logger(Logger::DEBUG)
       self_read, self_write = IO.pipe
       %w(INT TERM).each do |sig|
         begin
@@ -26,7 +28,11 @@ module ConsulBridge
       end
 
       begin
-        bootstrap_actor = BootstrapConsulActor.spawn(:bootstrap_consul, bucket: self.bucket)
+        bootstrap_actor = BootstrapConsulActor.spawn(
+          :bootstrap_consul,
+          bucket: self.bucket,
+          join_all: self.join_all
+        )
         bootstrap_actor << :bootstrap
 
         MonitorDockerEventsActor.spawn(

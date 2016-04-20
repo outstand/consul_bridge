@@ -6,10 +6,11 @@ require 'consul_bridge/join_consul'
 
 module ConsulBridge
   class BootstrapConsul < Base
-    attr_accessor :bucket
+    attr_accessor :bucket, :join_all
 
-    def initialize(bucket:)
+    def initialize(bucket:, join_all: false)
       self.bucket = bucket
+      self.join_all = join_all
     end
 
     def call
@@ -20,7 +21,7 @@ module ConsulBridge
 
       puts '==> Bootstrapping consul'
       master_ips = DownloadMasters.call(bucket: self.bucket).master_ips
-      JoinConsul.call(master_ips: master_ips)
+      JoinConsul.call(master_ips: master_ips, join_all: self.join_all)
       puts '==> Done.'
     end
   end

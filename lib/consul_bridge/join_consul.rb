@@ -4,19 +4,21 @@ require 'excon'
 
 module ConsulBridge
   class JoinConsul < Base
-    attr_accessor :master_ips
+    attr_accessor :master_ips, :join_all
 
     JOIN_URL = 'http://127.0.0.1:8500/v1/agent/join'.freeze
 
-    def initialize(master_ips:)
+    def initialize(master_ips:, join_all: false)
       self.master_ips = master_ips
+      self.join_all = join_all
     end
 
     def call
       private_ip = GetPrivateIP.call.private_ip
       puts "Detected private ip: #{private_ip}"
+      puts "Starting join with [#{master_ips.join(', ')}]"
 
-      joined = false
+      joined = 0
       master_ips.each do |ip|
         next if ip == private_ip
         begin
@@ -29,14 +31,19 @@ module ConsulBridge
             write_timeout: 5,
             tcp_nodelay: true
           )
-          joined = true
-          break
+          puts "Joined #{ip}"
+          joined += 1
+          break unless self.join_all
         rescue Excon::Errors::HTTPStatusError, Excon::Errors::SocketError
           next
         end
       end
 
-      raise "Unable to join with any of: [#{master_ips.join(', ')}]"
+      if join_all && joined < 2
+        raise 'Unable to join at least 2 masters with join_all'
+      elsif !join_all && joined < 1
+        raise 'Unable to join any master'
+      end
     end
 
   end
