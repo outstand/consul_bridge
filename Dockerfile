@@ -4,7 +4,7 @@ MAINTAINER Ryan Schlesinger <ryan@outstand.com>
 RUN addgroup bridge && \
     adduser -S -G bridge bridge
 
-ENV CONSUL_BRIDGE_VERSION=0.1.1
+ENV CONSUL_BRIDGE_VERSION=0.1.0
 
 # Use this to install an official release
 RUN apk --no-cache add libxml2 libxslt \
