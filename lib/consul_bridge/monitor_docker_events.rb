@@ -22,6 +22,7 @@ module ConsulBridge
         if Errno::ENOENT === e.cause
           raise
         else
+          puts "Warning: #{e.message}; retrying"
           retry
         end
       end
