@@ -4,6 +4,7 @@ module ConsulBridge
   class CLI < Thor
     desc 'version', 'Print out the version string'
     def version
+      require 'consul_bridge/version'
       say ConsulBridge::VERSION.to_s
     end
 
