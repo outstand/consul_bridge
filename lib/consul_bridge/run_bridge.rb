@@ -5,17 +5,18 @@ require 'concurrent'
 
 module ConsulBridge
   class RunBridge < Base
-    attr_accessor :bucket, :container_name, :join_all
+    attr_accessor :bucket, :container_name, :join_all, :verbose
 
-    def initialize(bucket:, container_name:, join_all: false)
+    def initialize(bucket:, container_name:, join_all: false, verbose: false)
       self.bucket = bucket
       self.container_name = container_name
       self.join_all = join_all
+      self.verbose = verbose
     end
 
     def call
-      # Enable for actor debugging
-      # Concurrent.use_stdlib_logger(Logger::DEBUG)
+      Concurrent.use_stdlib_logger(Logger::DEBUG) if self.verbose
+
       self_read, self_write = IO.pipe
       %w(INT TERM).each do |sig|
         begin
