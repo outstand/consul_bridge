@@ -1,6 +1,5 @@
 require 'consul_bridge/base'
 require 'consul_bridge/detect_consul'
-require 'consul_bridge/detect_consul_bootstrap'
 require 'consul_bridge/download_masters'
 require 'consul_bridge/join_consul'
 
