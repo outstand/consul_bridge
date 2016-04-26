@@ -13,10 +13,17 @@ module ConsulBridge
 
     def on_message(message)
       if message == :monitor
-        MonitorDockerEvents.call(
-          container_name: @container_name,
-          handler: ->(event){ @bootstrap_actor << :bootstrap }
-        )
+        begin
+          MonitorDockerEvents.call(
+            container_name: @container_name,
+            handler: ->(event){ @bootstrap_actor << :bootstrap }
+          )
+        rescue Excon::Errors::SocketError => e
+          if Errno::ENOENT === e.cause
+            puts "Warning: #{e.cause.message}; retrying in 30 seconds"
+            Concurrent::ScheduledTask.execute(30){ tell :monitor }
+          end
+        end
       else
         pass
       end

@@ -18,8 +18,12 @@ module ConsulBridge
         end
       rescue Docker::Error::TimeoutError
         retry
-      rescue Excon::Errors::SocketError
-        retry
+      rescue Excon::Errors::SocketError => e
+        if Errno::ENOENT === e.cause
+          raise
+        else
+          retry
+        end
       end
     end
   end
