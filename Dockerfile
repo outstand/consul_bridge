@@ -15,10 +15,13 @@ RUN apk --no-cache add libxml2 libxslt \
 
 # Use this to install a development version
 # RUN apk --no-cache add build-base libxml2-dev libxslt-dev
-# COPY . /consul_bridge/
+# COPY Gemfile consul_bridge.gemspec /consul_bridge/
+# COPY lib/consul_bridge/version.rb /consul_bridge/lib/consul_bridge/
 # RUN cd /consul_bridge \
 #     && bundle config build.nokogiri --use-system-libraries \
-#     && bundle install \
+#     && bundle install
+# COPY . /consul_bridge/
+# RUN cd /consul_bridge \
 #     && bundle exec rake install
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
