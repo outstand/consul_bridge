@@ -2,9 +2,10 @@ FROM outstand/ruby-base:2.2.4-alpine
 MAINTAINER Ryan Schlesinger <ryan@outstand.com>
 
 RUN addgroup bridge && \
-    adduser -S -G bridge bridge
+    addgroup -g 1101 docker && \
+    adduser -S -G bridge -G docker bridge
 
-ENV CONSUL_BRIDGE_VERSION=0.1.2
+ENV CONSUL_BRIDGE_VERSION=0.1.4
 
 RUN apk --no-cache add libxml2 libxslt \
     && apk --no-cache add --virtual build-dependencies build-base libxml2-dev libxslt-dev \
