@@ -1,8 +1,4 @@
-# ConsulBridge
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/consul_bridge`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+# Consul Bridge
 
 ## Installation
 
@@ -22,15 +18,26 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Master nodes:
+`docker run -d --net=host outstand/consul_bridge start -b <heartbeat bucket> -n <consul container name> -a`
+
+Client nodes:
+`docker run -d --net=host outstand/consul_bridge start -b <heartbeat bucket> -n <consul container name>`
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+- `docker volume create --name fog`
+- `./build_dev.sh`
+- `docker run -it --rm --net=host -v $(pwd):/consul_bridge -v fog:/fog -e FOG_LOCAL=true outstand/consul_bridge:dev start -b bucket -n backup`
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To release a new version:
+- Update the version number in `version.rb` and `Dockerfile.release` and commit the result.
+- `./build_dev.sh`
+- `docker run -it --rm -v ~/.gitconfig:/root/.gitconfig -v ~/.gitconfig.user:/root/.gitconfig.user -v ~/.ssh/id_rsa:/root/.ssh/id_rsa -v ~/.gem:/root/.gem outstand/consul_bridge:dev rake release`
+- `docker build -t outstand/consul_bridge:VERSION -f Dockerfile.release .`
+- `docker push outstand/consul_bridge:VERSION`
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/consul_bridge.
+Bug reports and pull requests are welcome on GitHub at https://github.com/outstand/consul_bridge.
 

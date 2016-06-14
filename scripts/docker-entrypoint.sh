@@ -9,6 +9,10 @@ fi
 
 if ${BINARY} help "$1" 2>&1 | grep -q "consul_bridge $1"; then
   set -- ${BINARY} "$@"
+
+  if [ -n "$FOG_LOCAL" ]; then
+    chown -R bridge:bridge /fog
+  fi
 fi
 
 exec "$@"
