@@ -1,20 +1,17 @@
-require 'consul_bridge/base'
+require 'metaractor'
 require 'docker-api'
 
 module ConsulBridge
-  class MonitorDockerEvents < Base
-    attr_accessor :container_name, :handler
+  class MonitorDockerEvents
+    include Metaractor
 
-    def initialize(container_name:, handler:)
-      self.container_name = container_name
-      self.handler = handler
-    end
+    required :container_name, :handler
 
     def call
       begin
-        filters = {type: [:container], event: [:start], container: [self.container_name]}.to_json
+        filters = {type: [:container], event: [:start], container: [container_name]}.to_json
         Docker::Event.stream(filters: filters) do |event|
-          self.handler.call(event)
+          handler.call(event)
         end
       rescue Docker::Error::TimeoutError
         retry
@@ -26,6 +23,15 @@ module ConsulBridge
           retry
         end
       end
+    end
+
+    private
+    def container_name
+      context.container_name
+    end
+
+    def handler
+      context.handler
     end
   end
 end

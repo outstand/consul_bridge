@@ -24,7 +24,9 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'docker-api', '~> 1.28'
   spec.add_runtime_dependency 'concurrent-ruby', '~> 1.0'
   spec.add_runtime_dependency 'concurrent-ruby-edge', '~> 0.2'
+  spec.add_runtime_dependency 'metaractor', '~> 0.5'
 
   spec.add_development_dependency "bundler", "~> 1.11"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "fog-local", "~> 0.3"
 end

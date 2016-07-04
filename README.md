@@ -26,9 +26,9 @@ Client nodes:
 
 ## Development
 
-- `docker volume create --name fog`
+- `docker volume create --name consul_bridge_fog`
 - `./build_dev.sh`
-- `docker run -it --rm --net=host -v $(pwd):/consul_bridge -v fog:/fog -e FOG_LOCAL=true outstand/consul_bridge:dev start -b bucket -n backup`
+- `docker run -it --rm --net=host -v $(pwd):/consul_bridge -v consul_bridge_fog:/fog -e FOG_LOCAL=true outstand/consul_bridge:dev start -b bucket -n backup`
 
 To release a new version:
 - Update the version number in `version.rb` and `Dockerfile.release` and commit the result.

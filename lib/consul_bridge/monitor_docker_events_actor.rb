@@ -14,7 +14,7 @@ module ConsulBridge
     def on_message(message)
       if message == :monitor
         begin
-          MonitorDockerEvents.call(
+          MonitorDockerEvents.call!(
             container_name: @container_name,
             handler: ->(event){ @bootstrap_actor << :bootstrap }
           )
@@ -24,6 +24,8 @@ module ConsulBridge
             Concurrent::ScheduledTask.execute(30){ tell :monitor }
           end
         end
+
+        nil
       else
         pass
       end

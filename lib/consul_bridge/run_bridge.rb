@@ -1,21 +1,21 @@
-require 'consul_bridge/base'
+require 'metaractor'
 require 'consul_bridge/bootstrap_consul_actor'
 require 'consul_bridge/monitor_docker_events_actor'
 require 'concurrent'
 
 module ConsulBridge
-  class RunBridge < Base
-    attr_accessor :bucket, :container_name, :join_all, :verbose
+  class RunBridge
+    include Metaractor
 
-    def initialize(bucket:, container_name:, join_all: false, verbose: false)
-      self.bucket = bucket
-      self.container_name = container_name
-      self.join_all = join_all
-      self.verbose = verbose
+    required :bucket, :container_name, :join_all, :verbose
+
+    before do
+      context.join_all ||= false
+      context.verbose ||= false
     end
 
     def call
-      Concurrent.use_stdlib_logger(Logger::DEBUG) if self.verbose
+      Concurrent.use_stdlib_logger(Logger::DEBUG) if verbose
 
       self_read, self_write = IO.pipe
       %w(INT TERM).each do |sig|
@@ -31,8 +31,8 @@ module ConsulBridge
       begin
         bootstrap_actor = BootstrapConsulActor.spawn(
           :bootstrap_consul,
-          bucket: self.bucket,
-          join_all: self.join_all
+          bucket: bucket,
+          join_all: join_all
         )
         bootstrap_actor << :bootstrap
 
@@ -54,6 +54,7 @@ module ConsulBridge
       end
     end
 
+    private
     def handle_signal(sig)
       case sig
       when 'INT'
@@ -61,6 +62,22 @@ module ConsulBridge
       when 'TERM'
         raise Interrupt
       end
+    end
+
+    def bucket
+      context.bucket
+    end
+
+    def container_name
+      context.container_name
+    end
+
+    def join_all
+      context.join_all
+    end
+
+    def verbose
+      context.verbose
     end
   end
 end
