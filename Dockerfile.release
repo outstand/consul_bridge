@@ -6,7 +6,7 @@ RUN addgroup -S bridge && \
     addgroup -g 1101 docker && \
     addgroup bridge docker
 
-ENV CONSUL_BRIDGE_VERSION=0.1.4
+ENV CONSUL_BRIDGE_VERSION=0.1.5
 
 RUN apk --no-cache add --virtual build-dependencies build-base \
     && gem install consul_bridge -v ${CONSUL_BRIDGE_VERSION} \
